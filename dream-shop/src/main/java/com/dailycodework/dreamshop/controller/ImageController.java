@@ -7,16 +7,21 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.dailycodework.dreamshop.exceptions.ResourceNotFoundException;
 import com.dailycodework.dreamshop.model.Image;
 import com.dailycodework.dreamshop.response.ApiRespose;
 import com.dailycodework.dreamshop.service.image.iImageService;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("{api.prefix}/images")
 public class ImageController {
@@ -39,13 +44,28 @@ public class ImageController {
         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + image.getFileName() + "\"")
         .body(resource);
 }
-
+    @PutMapping("/update/{imageId}/update")
     public ResponseEntity<ApiResponse> updateImage(@PathVariable Long imageId, @RequestBody MultipartFile file) {
-    Image image = imageService.getImageById(imageId);
+    try{Image image = imageService.getImageById(imageId);
     if(image != null) {
         imageService.updateImage(file, imageId);
         return ResponseEntity.ok(new ApiResponse( message: "Update success!", image));
     }
+}catch(ResourceNotFoundException e){
+    return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse("Update failed", INTERNAL_SERVER_ERROR));
+}
+
+    @DeleteMapping("/update/{imageId}/update")
+    public ResponseEntity<ApiResponse> deleteImage(@PathVariable Long imageId) {
+   try{
+
+    Image image = imageService.getImageById(imageId);
+    if(image != null) {
+        imageService.deleteImage(file, imageId);
+        return ResponseEntity.ok(new ApiResponse( message: "Delete success!", image));
+    }
+}catch(ResourceNotFoundException e){
+    return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse("Delete failed", INTERNAL_SERVER_ERROR));
 }
 
 
