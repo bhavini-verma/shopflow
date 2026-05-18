@@ -6,15 +6,13 @@ import com.dailycodework.dreamshop.service.iImageService;
 
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-
-import static org.springframework.http.HttpStatus.*;
-
 
 @RestController
 @RequestMapping("/api/images")
@@ -27,46 +25,46 @@ public class ImageController {
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<?> saveImage(@RequestParam List<MultipartFile> files,
+    public ResponseEntity<java.lang.Object> saveImage(@RequestParam List<MultipartFile> files,
                                        @RequestParam Long productId) {
         try {
             var images = imageService.saveImage(files, productId);
-            return ResponseEntity.ok(images);
+            return new ResponseEntity<java.lang.Object>(images, HttpStatus.OK);
         } catch (Exception e) {
-            return ResponseEntity.status(INTERNAL_SERVER_ERROR)
-                    .body("Upload failed: " + e.getMessage());
+            return new ResponseEntity<java.lang.Object>("Upload failed: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @GetMapping("/download/{imageId}")
     public ResponseEntity<ByteArrayResource> downloadImage(@PathVariable Long imageId) {
-
         Image image = imageService.getImageById(imageId);
-
-        ByteArrayResource resource = new ByteArrayResource(image.getImage()); // ✅ FIXED
-
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(image.getFileType()))
-                .header(HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=\"" + image.getFileName() + "\"")
-                .body(resource);
+        ByteArrayResource resource = new ByteArrayResource(image.getImage());
+        
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType(image.getFileType()));
+        headers.setContentDispositionFormData("attachment", image.getFileName());
+        
+        return new ResponseEntity<ByteArrayResource>(resource, headers, HttpStatus.OK);
     }
 
     @PutMapping("/update/{imageId}")
-    public ResponseEntity<?> updateImage(@PathVariable Long imageId,
+    public ResponseEntity<java.lang.Object> updateImage(@PathVariable Long imageId,
                                          @RequestParam MultipartFile file) {
         try {
             imageService.updateImage(file, imageId);
-            return ResponseEntity.ok("Update successful");
+            return new ResponseEntity<java.lang.Object>("Update successful", HttpStatus.OK);
         } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(NOT_FOUND).body(e.getMessage());
+            return new ResponseEntity<java.lang.Object>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
     @DeleteMapping("/{id}")
-public ResponseEntity<?> deleteImage(@PathVariable Long id) {
-    imageService.deleteImage(id);
-    return ResponseEntity.ok("Image deleted successfully");
-}
-        
+    public ResponseEntity<java.lang.Object> deleteImage(@PathVariable Long id) {
+        try {
+            imageService.deleteImage(id);
+            return new ResponseEntity<java.lang.Object>("Image deleted successfully", HttpStatus.OK);
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<java.lang.Object>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
     }
+}

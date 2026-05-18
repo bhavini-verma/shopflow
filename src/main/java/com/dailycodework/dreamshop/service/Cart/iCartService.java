@@ -1,12 +1,11 @@
 package com.dailycodework.dreamshop.service.Cart;
 
-import java.security.KeyStore.LoadStoreParameter;
+import java.math.BigDecimal;
+import com.dailycodework.dreamshop.model.Cart;
 
 public interface iCartService {
-    Cart getcart(Long id);
-
+    Cart getCart(Long id);
     void clearCart(Long id);
-
     BigDecimal getTotalPrice(Long id);
-
+    Long initializeNewCart();
 }

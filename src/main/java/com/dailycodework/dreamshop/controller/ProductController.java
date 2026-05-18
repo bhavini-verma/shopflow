@@ -7,12 +7,11 @@ import com.dailycodework.dreamshop.dto.ProductDto;
 import com.dailycodework.dreamshop.request.AddProductRequest;
 import com.dailycodework.dreamshop.request.ProductUpdateRequest;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
-import static org.springframework.http.HttpStatus.*;
 
 @RestController
 @RequestMapping("/api/products")
@@ -25,79 +24,77 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllProducts() {
-        List<Product> products=productService.getAllProducts();
-
-        return ResponseEntity.ok(productService.getAllProducts());
+    public ResponseEntity<java.lang.Object> getAllProducts() {
+        return new ResponseEntity<java.lang.Object>(productService.getAllProducts(), HttpStatus.OK);
     }
 
     @GetMapping("/{productId}")
-    public ResponseEntity<?> getProductById(@PathVariable Long productId) {
+    public ResponseEntity<java.lang.Object> getProductById(@PathVariable Long productId) {
         try {
             Product product = productService.getProductById(productId);
-            ProductDto productDto=productService.convertToDto(product);
-
-            return ResponseEntity.ok(productService.getProductById(productId));
+            ProductDto productDto = productService.convertToDto(product);
+            return new ResponseEntity<java.lang.Object>(productDto, HttpStatus.OK);
         } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(NOT_FOUND).body(e.getMessage());
+            return new ResponseEntity<java.lang.Object>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
     @PostMapping("/add")
-    public ResponseEntity<?> addProduct(@RequestBody AddProductRequest product) {
+    public ResponseEntity<java.lang.Object> addProduct(@RequestBody AddProductRequest product) {
         try {
-            return ResponseEntity.ok(productService.addProduct(product));
+            Product saved = productService.addProduct(product);
+            return new ResponseEntity<java.lang.Object>(saved, HttpStatus.OK);
         } catch (Exception e) {
-            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(e.getMessage());
+            return new ResponseEntity<java.lang.Object>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @PutMapping("/{productId}")
-    public ResponseEntity<?> updateProduct(
+    public ResponseEntity<java.lang.Object> updateProduct(
             @PathVariable Long productId,
             @RequestBody ProductUpdateRequest product) {
-
         try {
-            return ResponseEntity.ok(productService.updateProduct(product, productId));
+            Product updated = productService.updateProduct(product, productId);
+            return new ResponseEntity<java.lang.Object>(updated, HttpStatus.OK);
         } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(NOT_FOUND).body(e.getMessage());
+            return new ResponseEntity<java.lang.Object>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
     @DeleteMapping("/{productId}")
-    public ResponseEntity<?> deleteProduct(@PathVariable Long productId) {
+    public ResponseEntity<java.lang.Object> deleteProduct(@PathVariable Long productId) {
         try {
             productService.deleteProductById(productId);
-            return ResponseEntity.ok("Deleted successfully");
+            return new ResponseEntity<java.lang.Object>("Deleted successfully", HttpStatus.OK);
         } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(NOT_FOUND).body(e.getMessage());
+            return new ResponseEntity<java.lang.Object>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
     @GetMapping("/name/{name}")
-    public ResponseEntity<?> getProductByName(@PathVariable String name) {
+    public ResponseEntity<java.lang.Object> getProductByName(@PathVariable String name) {
         List<Product> products = productService.getProductsByName(name);
-
-        return products.isEmpty()
-                ? ResponseEntity.status(NOT_FOUND).body("No products found")
-                : ResponseEntity.ok(products);
+        if (products.isEmpty()) {
+            return new ResponseEntity<java.lang.Object>("No products found", HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<java.lang.Object>(products, HttpStatus.OK);
     }
 
     @GetMapping("/brand/{brand}")
-    public ResponseEntity<?> getProductByBrand(@PathVariable String brand) {
+    public ResponseEntity<java.lang.Object> getProductByBrand(@PathVariable String brand) {
         List<Product> products = productService.getProductsByBrand(brand);
-        List<ProductDto> convertedProducts=productService.getConvertedProducts(products);
-        return products.isEmpty()
-                ? ResponseEntity.status(NOT_FOUND).body("No products found")
-                : ResponseEntity.ok(products);
+        if (products.isEmpty()) {
+            return new ResponseEntity<java.lang.Object>("No products found", HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<java.lang.Object>(products, HttpStatus.OK);
     }
 
     @GetMapping("/category/{category}")
-    public ResponseEntity<?> getProductByCategory(@PathVariable String category) {
+    public ResponseEntity<java.lang.Object> getProductByCategory(@PathVariable String category) {
         List<Product> products = productService.getProductsByCategory(category);
-
-        return products.isEmpty()
-                ? ResponseEntity.status(NOT_FOUND).body("No products found")
-                : ResponseEntity.ok(products);
+        if (products.isEmpty()) {
+            return new ResponseEntity<java.lang.Object>("No products found", HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<java.lang.Object>(products, HttpStatus.OK);
     }
 }

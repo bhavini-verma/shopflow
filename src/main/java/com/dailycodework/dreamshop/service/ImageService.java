@@ -20,31 +20,27 @@ public class ImageService implements iImageService {
     private final ImageRepository imageRepository;
     private final iProductService productService;
 
-    // ✅ Constructor Injection (IMPORTANT)
     public ImageService(ImageRepository imageRepository, iProductService productService) {
         this.imageRepository = imageRepository;
         this.productService = productService;
     }
 
-    // ✅ Get Image by ID
     @Override
     public Image getImageById(Long id) {
         return imageRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Image not found!"));
     }
 
-    // ✅ Delete Image
     @Override
     public void deleteImage(Long id) {
         Image image = getImageById(id);
         imageRepository.delete(image);
     }
 
-    // ✅ Save Images
     @Override
     public List<ImageDto> saveImage(List<MultipartFile> files, Long productId) {
         Product product = productService.getProductById(productId);
-        List<ImageDto> savedImageDtos = new ArrayList<>();
+        List<ImageDto> savedImageDtos = new ArrayList<ImageDto>();
 
         for (MultipartFile file : files) {
             try {
@@ -61,7 +57,6 @@ public class ImageService implements iImageService {
 
                 imageRepository.save(savedImage);
 
-                // DTO mapping
                 ImageDto imageDto = new ImageDto();
                 imageDto.setImageId(savedImage.getId());
                 imageDto.setImageName(savedImage.getFileName());
@@ -77,7 +72,6 @@ public class ImageService implements iImageService {
         return savedImageDtos;
     }
 
-    // ✅ Update Image
     @Override
     public void updateImage(MultipartFile file, Long imageId) {
         Image image = getImageById(imageId);

@@ -8,17 +8,15 @@ import com.dailycodework.dreamshop.repository.CategoryRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
-
 
 @Service
-
 public class CategoryService implements iCategoryService {
 
     private final CategoryRepository categoryRepository;
+
     public CategoryService(CategoryRepository categoryRepository) {
-    this.categoryRepository = categoryRepository;
-}
+        this.categoryRepository = categoryRepository;
+    }
 
     @Override
     public Category getCategoryById(Long id) {
@@ -38,26 +36,24 @@ public class CategoryService implements iCategoryService {
 
     @Override
     public Category addCategory(Category category) {
-        return Optional.of(category)
-            .filter(c -> !categoryRepository.existsByName(c.getName()))
-            .map(categoryRepository::save)
-            .orElseThrow(() -> new ResourceAlreadyExistsException(category.getName() + " already exists!"));
+        if (categoryRepository.existsByName(category.getName())) {
+            throw new ResourceAlreadyExistsException(category.getName() + " already exists!");
+        }
+        return categoryRepository.save(category);
     }
 
     @Override
     public Category updateCategory(Long id, Category category) {
-        return Optional.ofNullable(getCategoryById(id))
-            .map(oldCategory -> {
-                oldCategory.setName(category.getName());
-                return categoryRepository.save(oldCategory);
-            })
-            .orElseThrow(() -> new ResourceNotFoundException("Category not found!"));
+        Category oldCategory = getCategoryById(id);
+        oldCategory.setName(category.getName());
+        return categoryRepository.save(oldCategory);
     }
 
     @Override
     public void deleteCategory(Long id) {
-        categoryRepository.findById(id)
-            .ifPresentOrElse(categoryRepository::delete,
-                () -> { throw new ResourceNotFoundException("Category not found!"); });
+        if (!categoryRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Category not found!");
+        }
+        categoryRepository.deleteById(id);
     }
 }

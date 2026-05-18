@@ -1,44 +1,53 @@
 package com.dailycodework.dreamshop.service.Cart;
 
 import java.math.BigDecimal;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.springframework.stereotype.Service;
 
+import com.dailycodework.dreamshop.exceptions.ResourceNotFoundException;
 import com.dailycodework.dreamshop.model.Cart;
+import com.dailycodework.dreamshop.repository.CartRepository;
+import com.dailycodework.dreamshop.repository.CartItemRepository;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-
 public class CartService implements iCartService {
 
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
+    private final AtomicLong cartIdGenerator = new AtomicLong(0);
 
     @Override
-    public Cart getcart(Long id) {
+    public Cart getCart(Long id) {
         Cart cart = cartRepository.findById(id)
-                .orElse(() -> new ResourceNotFoundException("Cart not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Cart not found"));
         BigDecimal totalamount = cart.getTotalAmount();
         cart.setTotalAmount(totalamount);
-        return null;
+        return cart;
     }
 
     @Override
     public void clearCart(Long id) {
-        Cart cart = getcart(id);
+        Cart cart = getCart(id);
         cartItemRepository.deleteAllByCartId(id);
-        cart.getItems().clear();
+        cart.getCartItems().clear();
         cartRepository.deleteById(id);
-
     }
 
     @Override
     public BigDecimal getTotalPrice(Long id) {
-        Cart cart = getcart(id);
-
+        Cart cart = getCart(id);
         return cart.getTotalAmount();
     }
 
+    @Override
+    public Long initializeNewCart() {
+        Cart newCart = new Cart();
+        Long newCartId = cartIdGenerator.incrementAndGet();
+        newCart.setId(newCartId);
+        return cartRepository.save(newCart).getId();
+    }
 }

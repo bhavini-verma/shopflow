@@ -4,15 +4,12 @@ import com.dailycodework.dreamshop.category.iCategoryService;
 import com.dailycodework.dreamshop.exceptions.ResourceAlreadyExistsException;
 import com.dailycodework.dreamshop.exceptions.ResourceNotFoundException;
 import com.dailycodework.dreamshop.model.Category;
-import com.dailycodework.dreamshop.model.Image;
-import com.dailycodework.dreamshop.service.iImageService;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
-import static org.springframework.http.HttpStatus.*;
 
 @RestController
 @RequestMapping("/api/categories")
@@ -25,52 +22,52 @@ public class CategoryController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<?> getAllCategories() {
+    public ResponseEntity<java.lang.Object> getAllCategories() {
         try {
             List<Category> categories = categoryService.getAllCategories();
-            return ResponseEntity.ok(categories);
+            return new ResponseEntity<java.lang.Object>(categories, HttpStatus.OK);
         } catch (Exception e) {
-            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body("Error fetching categories");
+            return new ResponseEntity<java.lang.Object>("Error fetching categories", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @PostMapping("/add")
-    public ResponseEntity<?> addCategory(@RequestBody Category category) {
+    public ResponseEntity<java.lang.Object> addCategory(@RequestBody Category category) {
         try {
             Category saved = categoryService.addCategory(category);
-            return ResponseEntity.ok(saved);
+            return new ResponseEntity<java.lang.Object>(saved, HttpStatus.OK);
         } catch (ResourceAlreadyExistsException e) {
-            return ResponseEntity.status(CONFLICT).body(e.getMessage());
+            return new ResponseEntity<java.lang.Object>(e.getMessage(), HttpStatus.CONFLICT);
         }
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getCategoryById(@PathVariable Long id) {
+    public ResponseEntity<java.lang.Object> getCategoryById(@PathVariable Long id) {
         try {
             Category category = categoryService.getCategoryById(id);
-            return ResponseEntity.ok(category);
+            return new ResponseEntity<java.lang.Object>(category, HttpStatus.OK);
         } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(NOT_FOUND).body(e.getMessage());
+            return new ResponseEntity<java.lang.Object>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
     @GetMapping("/name/{name}")
-    public ResponseEntity<?> getCategoryByName(@PathVariable String name) {
+    public ResponseEntity<java.lang.Object> getCategoryByName(@PathVariable String name) {
         try {
             Category category = categoryService.getCategoryByName(name);
-            return ResponseEntity.ok(category);
+            return new ResponseEntity<java.lang.Object>(category, HttpStatus.OK);
         } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(NOT_FOUND).body(e.getMessage());
+            return new ResponseEntity<java.lang.Object>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteCategory(@PathVariable Long id) {
+    public ResponseEntity<java.lang.Object> deleteCategory(@PathVariable Long id) {
         try {
             categoryService.deleteCategory(id);
-            return ResponseEntity.ok("Category deleted successfully");
+            return new ResponseEntity<java.lang.Object>("Category deleted successfully", HttpStatus.OK);
         } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(NOT_FOUND).body(e.getMessage());
+            return new ResponseEntity<java.lang.Object>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 }
