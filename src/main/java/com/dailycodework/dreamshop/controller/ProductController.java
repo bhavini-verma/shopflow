@@ -9,10 +9,13 @@ import com.dailycodework.dreamshop.request.ProductUpdateRequest;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@EnableMethodSecurity
 @RestController
 @RequestMapping("/api/products")
 public class ProductController {
@@ -39,6 +42,8 @@ public class ProductController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+
     @PostMapping("/add")
     public ResponseEntity<java.lang.Object> addProduct(@RequestBody AddProductRequest product) {
         try {
@@ -48,6 +53,8 @@ public class ProductController {
             return new ResponseEntity<java.lang.Object>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
 
     @PutMapping("/{productId}")
     public ResponseEntity<java.lang.Object> updateProduct(
@@ -60,6 +67,8 @@ public class ProductController {
             return new ResponseEntity<java.lang.Object>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
 
     @DeleteMapping("/{productId}")
     public ResponseEntity<java.lang.Object> deleteProduct(@PathVariable Long productId) {
