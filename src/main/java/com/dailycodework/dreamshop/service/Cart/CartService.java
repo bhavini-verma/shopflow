@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 import com.dailycodework.dreamshop.exceptions.ResourceNotFoundException;
 import com.dailycodework.dreamshop.model.Cart;
 import com.dailycodework.dreamshop.repository.CartRepository;
+
+import jakarta.transaction.Transactional;
+
 import com.dailycodework.dreamshop.repository.CartItemRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -24,11 +27,10 @@ public class CartService implements iCartService {
     public Cart getCart(Long id) {
         Cart cart = cartRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Cart not found"));
-        BigDecimal totalamount = cart.getTotalAmount();
-        cart.setTotalAmount(totalamount);
         return cart;
     }
 
+    @Transactional
     @Override
     public void clearCart(Long id) {
         Cart cart = getCart(id);
