@@ -21,7 +21,7 @@ public class CategoryService implements iCategoryService {
     @Override
     public Category getCategoryById(Long id) {
         return categoryRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Category not found!"));
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found!"));
     }
 
     @Override
@@ -36,9 +36,14 @@ public class CategoryService implements iCategoryService {
 
     @Override
     public Category addCategory(Category category) {
-        if (categoryRepository.existsByName(category.getName())) {
-            throw new ResourceAlreadyExistsException(category.getName() + " already exists!");
+
+        Category existingCategory = categoryRepository.findByName(category.getName());
+
+        if (existingCategory != null) {
+            throw new ResourceAlreadyExistsException(
+                    category.getName() + " already exists!");
         }
+
         return categoryRepository.save(category);
     }
 
