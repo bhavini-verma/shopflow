@@ -1,7 +1,7 @@
-# Dream Shop
+# Shop Flow
 
 ## Overview
-Dream‑Shop is a **backend e‑commerce REST API** built with **Spring Boot**. It provides JWT authentication, product catalog, shopping cart, and order management endpoints.
+Shop-Flow is a **backend e‑commerce REST API** built with **Spring Boot**. It provides JWT authentication, product catalog, shopping cart, and order management endpoints.
 
 ## Tech Stack
 - Java 17
