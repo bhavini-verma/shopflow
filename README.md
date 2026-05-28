@@ -1,7 +1,7 @@
 # Dream Shop
 
 ## Overview
-Dream‑Shop is a **premium e‑commerce platform** built with **Spring Boot**. It demonstrates a full‑stack application with JWT authentication, product catalog, shopping cart, and order management.
+Dream‑Shop is a **backend e‑commerce REST API** built with **Spring Boot**. It provides JWT authentication, product catalog, shopping cart, and order management endpoints.
 
 ## Tech Stack
 - Java 17
