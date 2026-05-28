@@ -1,7 +1,7 @@
 package com.dailycodework.dreamshop.model.security.jwt;
 
 import java.security.Key;
-import io.jsonwebtoken.security.SignatureException;
+
 import java.util.Date;
 import java.util.List;
 
@@ -64,7 +64,7 @@ public class JwtUtils {
                 .build()
                 .parseClaimsJws(token);
             return true;
-        } catch (ExpiredJwtException | UnsupportedJwtException | MalformedJwtException | SignatureException | IllegalArgumentException e) {
+        } catch (ExpiredJwtException | UnsupportedJwtException | MalformedJwtException | IllegalArgumentException e) {
             throw new JwtException(e.getMessage());
         }
     }

@@ -28,11 +28,23 @@ public class Cart {
     private Long id;
     private BigDecimal totalAmount = BigDecimal.ZERO;
 
-    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<CartItem> cartItems = new HashSet<CartItem>();
 
-    @OneToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    // Explicit getters/setters for compatibility
+    public Set<CartItem> getCartItems() {
+        return cartItems;
+    }
+
+    public void setCartItems(Set<CartItem> cartItems) {
+        this.cartItems = cartItems;
+    }
+
+    public BigDecimal getTotalAmount() {
+        return totalAmount;
+    }
+
+    public void setTotalAmount(BigDecimal totalAmount) {
+        this.totalAmount = totalAmount;
+    }
+
 
 }
